@@ -18,7 +18,7 @@
 
 def findWordsByChar(words, chars):
 
-    # Now think about how to design this function. The solution will be quite straight-forward: just use a loop to iterate through every string in words. And for every string, we check whether it is a "nice" string. If it is, then we add the length of the string to the final returned value; if not, we just ignore it and goes on.
+    # Now think about how to design this function. The solution will be quite straight-forward: just use a loop to iterate through every string in words. And for every string, we check whether it is a "nice" string. If it is, then we add the length of the string to the final returned value; if not, we just ignore it and go on.
 
     # So first we initiate the returned value, I usually use "ans" or "res" as the variable name, but you can choose whatever you want. And obviously, its initial value should be 0.
     ans = 0
@@ -61,6 +61,8 @@ def isNiceString(string, chars):
     # And then, for every character in string, we check if its frequency in string is no greater than its frequency in chars.
     for i in range(len(string)):
 
+        if string[i] not in freqChars:
+            return False
         if freqString[string[i]] > freqChars[string[i]]:
             # if the frequency of one character in string is larger than that in chars, then the string is definitely not a "nice" one. So we can just return False.
             return False
@@ -76,7 +78,11 @@ def countFreq(string):
 
     # Then we iterate every character in string, and increament its frequency by 1.
     # I believe you can do this part by yourself!
-
+    for i in range(len(string)):
+        if string[i] in freq:
+            freq[string[i]] += 1
+        else:
+            freq[string[i]] = 1
 
     # Finally, we return the resulting dictionary.
     return freq
