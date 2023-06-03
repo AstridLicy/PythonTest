@@ -41,9 +41,29 @@ class SmartFridge:
 
     def add_item(self, item, quantity):
         "*** YOUR CODE HERE ***"
+        if item in self.items.keys():
+            self.items[item] += quantity
+        else:
+            self.items = {item : quantity}
+        print(f'I now have {self.items[item]} {item}')
 
     def use_item(self, item, quantity):
         "*** YOUR CODE HERE ***"
+        if self.items[item] > quantity:
+            self.items[item] -= quantity
+            print(f'I have {self.items[item]} {item} left')
+        else:
+            self.items[item] = 0
+            print(f'Ohno, we need more {item}')
+
+fridgey = SmartFridge()
+fridgey.add_item('Mayo', 1)
+fridgey.add_item('Mayo', 2)
+fridgey.use_item('Mayo', 2.5)
+fridgey.use_item('Mayo', 0.5)
+fridgey.add_item('Eggs', 12)
+fridgey.use_item('Eggs', 15)
+fridgey.add_item('Eggs', 1)
 
 # You can try to write some test cases by yourself to test whether your codes are correct. Using test cases to test and debug your codes is the MOST important skill in coding.
 
@@ -85,26 +105,54 @@ class UndergroundSystem:
 
         self.checkInTimeTables = {} # This dictionary stores the passengers' id, their check-in stations and time. But how to store so much information in one dictionary? To construct a dictionary, you should always ask yourself two questions: (1) What element should I choose to use as the keys/values? (2) What kind of data structures should I use to store the values? Here you may want to use nested dictionary (the values in the dictionary are also dictionaries) because there are more than one kinds of keys (passengers' id and station names).
         self.tripTime = {} # This dictionary stores the time of all previous trips for all the routes from one station to another. Since we will have a lot of routes to record (e.g. "Tokyo" -> "Shibuya", "Ueno" -> "Shinjuku", "Shibuya" -> "Tokyo", etc...), what should you use as keys to distinguish different routes? And which data struture you will choose to use to store all the time of previous trips for every route? It is natural to use a list, e.g. if there are three trips for the route "Tokyo" -> "Shibuya" and the time is 10, 12, 14, then you can store them in a list like [10, 12 , 14], and it is easy to calculate the average time for "Tokyo" -> "Shibuya" according to the list. Can you think of another way or better ways to calculate the average time?
-
-        pass # delete this line after you complete the codes
+        #pass # delete this line after you complete the codes
 
     def checkIn(self, id: int, stationName: str, t: int) -> None:
         # This function marks that a passenger with an ID equal to `id` checks in at the station `stationName` at time `t`. Basically, this means that you should record these new information into the data structures (self.checkInTimeTables) you initiate in __init__ .
+        self.checkInTimeTables[id] =  {stationName : t}
+        # return self.checkInTimeTables
 
-        pass # delete this line after you complete the codes
+        #pass # delete this line after you complete the codes
 
     def checkOut(self, id: int, stationName: str, t: int) -> None:
         # This function marks that a passenger with an ID equal to `id` checks out at the station `stationName` at time `t`. However, different from the check-in, we do not initiate a data structure to store the check-out time. Why? Because when a passenger checks out at a station, it means that you can already calculate the time of the trip he has just completed. So there is no need to store the check-out time anymore. And you may also want to record the time of the trip into the data structure (self.tripTime) so that you can use them to calculte the average time.
-        
-        pass # delete this line after you complete the codes
+        if id in self.checkInTimeTables.keys():
+            keys = list(self.checkInTimeTables[id].keys())
+            key =keys[0]
+            onetime = t - self.checkInTimeTables[id][key]
+            station = f'{key} to {stationName}'
+            if f'{key} to {stationName}' not in self.tripTime:
+                timelist =[onetime]
+                self.tripTime[station] = timelist
+            else:
+                self.tripTime[station].append(onetime)
+            # return self.tripTime
+        #pass # delete this line after you complete the codes
 
     def getAverageTime(self, startStation: str, endStation: str) -> float:
         # This function should return the average time it takes to travel from `startStation` to `endStation`. You need to consider how to calculate the average time for the route according to the information you store in the data structure (self.tripTime).
 
         # Digress from the topic at hand, This kind of action is usually called a "query", which it aims to search or ask for some information instead of adding to or editing the existing information in this class. Once the function gets a "query" (here the "query" is (startStation, endStation) ), it will try to find "key"s in its data structures, and extract/calculate the corresponding "value" (here the "value" is the average time between startStation and endStation). You will meet "query", "key", "value" (or "q, k, v" in abbreviation) in the famous Transformer paper (https://arxiv.org/abs/1706.03762). Although they are used very differently, they actually share the same thoughts behind: you find the right "key" based on the "query", and then you extract/compute the "value" corresponding to the "key".
+        sumtime = 0
+        if f'{startStation} to {endStation}' in self.tripTime.keys():
+            for ele in range(0, len(self.tripTime[f'{startStation} to {endStation}'])):
+                sumtime += self.tripTime[f'{startStation} to {endStation}'][ele]
+            averagetime = sumtime / len(self.tripTime[f'{startStation} to {endStation}'])
+            # print(averagetime)
+            return averagetime
 
-        pass # delete this line after you complete the codes
+        #pass # delete this line after you complete the codes
 
+# a = UndergroundSystem()
+# a.checkIn(45, "Ikebukuro", 3)
+# a.checkIn(32, "Ueno", 8)
+# a.checkIn(27, "Ikebukuro", 10)
+# a.checkOut(45, "Shibuya", 15)
+# a.checkOut(27, "Shibuya", 20)
+# a.checkOut(32, "Shinjuku", 22)
+# a.getAverageTime("Ikebukuro", "Shibuya")
+# print(a.checkInTimeTables)
+# print(a.tripTime)
 
 # Below are some unit test codes, do not mind them. Just run the python file after you finished the codes then you will see whether your software succeed in three cities around the world!
 ############################################################################################################
